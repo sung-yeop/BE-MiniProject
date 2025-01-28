@@ -20,6 +20,7 @@
         <th scope="col">유저 이름</th>
         <th scope="col">접속</th>
         <th scope="col">수정</th>
+        <th scope="col">유저 삭제</th>
       </tr>
       </thead>
       <tbody>
@@ -32,12 +33,56 @@
         <td>
           <a th:href="@{/userUpdate.do(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>
         </td>
+        <td>
+          <input type="button" th:onclick="|viewModal(${list.id})|" th:value="삭제"/>
+        </td>
       </tr>
       <tr th:unless="${#lists.size(list)} > 0">
         <td colspan="4">조회된 결과가 없습니다.</td>
       </tr>
       </tbody>
     </table>
+    <div id="modal" style="display: none; justify-content: center; padding: 1rem; border: 1px solid black; border-radius: 12px; flex-direction: column; gap:12px" >
+      <span>해당 유저를 삭제하시겠습니까?</span>
+      <div style="display:flex; gap: 1.5rem">
+        <div onclick="confirmDelete()"
+             style="padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 0.75rem; padding-right: 0.75rem; cursor: pointer; background-color: #357abd; color: white; border-radius: 8px" >네</div>
+        <div onclick="hideModal()"
+             style="padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 0.75rem; padding-right: 0.75rem; border: 1px solid black; cursor: pointer; color: black; border-radius: 8px">아니오</div>
+      </div>
+    </div>
+    <script th:inline="javascript">
+      deleteTargetId = null;
+      function viewModal(userId) {
+        console.log("onClickDeleteBtn")
+        deleteTargetId = userId;
+        document.getElementById("modal").style.display="flex";
+      }
+
+      function hideModal(){
+        document.getElementById("modal").style.display="none";
+      }
+
+      function confirmDelete() {
+        if (deleteTargetId) {
+          fetch(`/user/delete?userId=${deleteTargetId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }).then(response => {
+            if (response.ok) {
+              location.reload();
+            } else {
+              alert('삭제 중 오류가 발생했습니다.');
+            }
+          }).catch(error => {
+            alert('삭제 중 오류가 발생했습니다.');
+          });
+        }
+        hideModal();
+      }
+    </script>
   </div>
 </body>
 </html>

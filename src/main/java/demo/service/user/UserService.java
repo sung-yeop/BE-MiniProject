@@ -11,4 +11,6 @@ public interface UserService {
     Boolean updateUser(UserProfileDto userProfileDto);
 
     UserProfileDto selectUserDetail(Integer userId);
+
+    Boolean deleteUser(Integer userId);
 }

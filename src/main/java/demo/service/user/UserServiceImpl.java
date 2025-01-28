@@ -37,4 +37,11 @@ public class UserServiceImpl implements UserService {
         System.out.println("Find : " + userProfileDto);
         return userProfileDto;
     }
+
+    @Override
+    public Boolean deleteUser(Integer userId) {
+        UserProfileDto userProfileDto = userMapper.getUserDetail(userId);
+        int isSuccess = userMapper.deleteUser(userProfileDto);
+        return isSuccess == 1;
+    }
 }

@@ -28,4 +28,10 @@
             , updated_dt = now()
         where id = #{id}
     </update>
+    <update id="deleteUser" parameterType="demo.dto.UserProfileDto" useGeneratedKeys="true" keyProperty="id">
+        update user_profile
+        set updated_dt = now()
+            , deleted_yn = 'Y'
+        where id = #{id}
+    </update>
 </mapper>

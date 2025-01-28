@@ -60,4 +60,16 @@ public class UserController {
             return "redirect:/userUpdate.do?userId=" + userProfileDto.getId().toString();
         }
     }
+
+    @PostMapping("/user/delete")
+    public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+        Boolean isSuccess = userService.deleteUser(userId);
+        if (isSuccess) {
+            redirectAttributes.addFlashAttribute("success", "사용자가 성공적으로 삭제되었습니다.");
+            return "redirect:/";
+        } else {
+            redirectAttributes.addFlashAttribute("fail", "[DB Error]");
+            return "redirect:/";
+        }
+    }
 }
