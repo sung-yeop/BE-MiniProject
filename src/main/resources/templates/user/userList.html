@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>유저 선택창</title>
-<!--  <link rel="stylesheet" th:href="@{/css/board.css}"/>-->
 </head>
+<!--  <link rel="stylesheet" th:href="@{/css/board.css}"/>-->
 <body style="display: flex; margin-top: 10rem; height: 100vh">
   <div class="container" style="width: 50%; margin: 0 auto;">
     <h2>유저 목록</h2>
@@ -28,7 +28,7 @@
         <td th:text="${list.id}"></td>
         <td th:text="${list.username}"></td>
         <td>
-          <a th:href="@{/user(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>
+          <a th:href="@{/home(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>
         </td>
         <td>
           <a th:href="@{/userUpdate.do(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>

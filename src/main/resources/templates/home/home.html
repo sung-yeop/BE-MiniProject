@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+</head>
+<style>
+    .navItem {
+        border: 0.5px solid gray;
+        border-radius: 6px;
+        padding: 6px 12px;
+    }
+    .navItem:hover {
+        background-color: #4a90e2;
+        color: white;
+        cursor: pointer;
+    }
+    .content-card {
+        margin: 0 auto;
+        min-height: 300px;
+        border-bottom: 1px solid black;
+    }
+
+    .content-card-title {
+        font-size: 32px;
+        font-weight: bold;
+    }
+</style>
+<body style="margin: 1rem 2rem; padding: 0; ">
+  <nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
+      <div style="display: flex; gap: 12px;">
+          <a class="navItem" th:href="@{/home(userId=${userProfileDto.id})}" style="text-decoration: none;">Home</a>
+          <a class="navItem" th:href="@{/exercise.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Exercise</a>
+          <a class="navItem" th:href="@{/routine.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Routine</a>
+          <a class="navItem" th:href="@{/worklog.do(userId=${userProfileDto.id})}" style="text-decoration: none;">WorkLog</a>
+      </div>
+      <a th:href="@{/}">Select User</a>
+  </nav>
+  <div style="display: flex; width: 100%; gap: 52px;">
+      <div style="position:fixed; border: 1px solid black; padding: 16px 24px; border-radius: 12px; width: 280px; height:320px; display: flex; justify-content: center; flex-direction: column">
+          <span style="text-align: center">접속한 유저 정보</span>
+          <div style="margin: 0 auto;" th:text="${userProfileDto.username}"></div>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px; justify-content: center">
+              <span style="text-align: center">현재 체지방량 / 근육량</span>
+              <span style="text-align: center" th:text="${userProfileDto.currentBodyFat}"></span>
+              <span style="text-align: center" th:text="${userProfileDto.currentMuscleMass}"></span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px; justify-content: center;">
+              <span style="text-align: center">목표 체지방량 / 근육량</span>
+              <span style="text-align: center" th:text="${userProfileDto.targetBodyFat}"></span>
+              <span style="text-align: center" th:text="${userProfileDto.targetMuscleMass}"></span>
+          </div>
+      </div>
+      <div style="margin-left: 400px; flex:1; display: flex; flex-direction: column; gap: 2rem;">
+          <div>
+              <span class="content-card-title">My Exercise</span>
+              <div class="content-card">
+                  <div th:if="${#lists.size(exerciseList)} > 0" th:each="exerciseList : ${exerciseList}">
+                      <div>
+                          <span th:text="${exerciseList.name}"></span>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div>
+              <span class="content-card-title">My Routine</span>
+              <div class="content-card"></div>
+          </div>
+          <div>
+              <span class="content-card-title">My WorkLog</span>
+              <div class="content-card"></div>
+          </div>
+      </div>
+  </div>
+</body>
+</html>

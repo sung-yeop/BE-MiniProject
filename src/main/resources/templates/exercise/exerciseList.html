@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<style>
+    .navItem {
+        border: 0.5px solid gray;
+        border-radius: 6px;
+        padding: 6px 12px;
+    }
+    .navItem:hover {
+        background-color: #4a90e2;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+<body style="margin: 1rem 2rem; padding: 0; ">
+    <nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
+        <div style="display: flex; gap: 12px;">
+            <a class="navItem" th:href="@{/home(userId=${userId})}" style="text-decoration: none;">Home</a>
+            <a class="navItem" th:href="@{/exercise.do(userId=${userId})}" style="text-decoration: none;">Exercise</a>
+            <a class="navItem" th:href="@{/routine.do(userId=${userId})}" style="text-decoration: none;">Routine</a>
+            <a class="navItem" th:href="@{/worklog.do(userId=${userId})}" style="text-decoration: none;">WorkLog</a>
+        </div>
+        <a th:href="@{/}">Select User</a>
+    </nav>
+    <div>
+        <div>
+        <div>
+            <a onclick="toggleAddModal()">운동 등록하기</a>
+        </div>
+        <div id="add-modal" style="display: none">
+            <form method="post" action="/exercise/add">
+                <input type="hidden" th:value="${userId}" name="userId"/>
+                <div>
+                    <span>운동명</span>
+                    <input type="text" name="name"/>
+                </div>
+                <div>
+                    <span>타겟 부위</span>
+                    <input type="text" name="targetMuscle"/>
+                </div>
+                <div>
+                    <span>운동 종목</span>
+                    <input type="text" name="exerciseType"/>
+                </div>
+                <div>
+                    <span>운동 설명 (필수 X)</span>
+                    <input type="text" name="description"/>
+                </div>
+                <button type="submit">등록하기</button>
+            </form>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th>운동 이름</th>
+                <th>타겟 부위</th>
+                <th>운동 타입</th>
+                <th>설명</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.size(list)} > 0" th:each="list: ${list}">
+                <td th:text="${list.name}"></td>
+                <td th:text="${list.targetMuscle}"></td>
+                <td th:text="${list.exerciseType}"></td>
+                <td th:text="${list.description}"></td>
+                <td>
+                    <a th:href="@{/exerciseUpdate.do(exerciseId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">수정하기</a>
+                </td>
+                <td>
+                    <input type="button" th:onclick="|addTargetId(${list.id})|" value="삭제하기"/>
+                </td>
+            </tr>
+            <tr th:unless="${#lists.size(list)} > 0">
+                <td colspan="4">등록된 운동이 없습니다.</td>
+            </tr>
+            <div id="deleteModal" style="display: none">
+                <span>
+                    해당 운동을 삭제하시겠습니까?
+                </span>
+                <button onclick="deleteTargetExercise()">예</button>
+                <Button onclick="hideDeleteModal()">아니오</Button>
+            </div>
+            </tbody>
+        </table>
+    </div>
+    <script th:inline="javascript">
+        let deleteTargetId = null;
+        const deleteModal = document.getElementById('deleteModal')
+
+        function toggleAddModal() {
+            const target = document.getElementById("add-modal").style
+            if (target.display == 'none') {
+                target.display = 'flex';
+            } else {
+                target.display= 'none';
+            }
+        }
+
+        function viewDeleteModal() {
+            deleteModal.style.display = "flex";
+        }
+
+        function hideDeleteModal() {
+            deleteModal.style.display = "none";
+        }
+
+        function addTargetId(exerciseId) {
+            deleteTargetId = exerciseId;
+            viewDeleteModal();
+        }
+
+        function deleteTargetExercise() {
+            if (deleteTargetId) {
+                fetch(`/exercise/delete?exerciseId=${deleteTargetId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('삭제 중 오류가 발생했습니다.');
+                    }
+                }).catch(error => {
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
+            }
+            hideDeleteModal();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.mapper.exercise.ExerciseMapper">
+    <select id="getUserExercise" parameterType="demo.dto.ExerciseDto">
+        select id, name, target_muscle, exercise_type, description
+        from exercise
+        WHERE deleted_yn = 'N' and user_id = #{userId}
+    </select>
+    <insert id="addExercise" parameterType="demo.dto.ExerciseDto">
+        insert into exercise(user_id, name, target_muscle, exercise_type, description)
+        values (#{userId}, #{name}, #{targetMuscle}, #{exerciseType}, #{description})
+    </insert>
+    <update id="deleteExercise" parameterType="demo.dto.ExerciseDto" useGeneratedKeys="true" keyProperty="id">
+        update exercise
+        set deleted_yn = 'Y'
+        where id = #{exerciseId}
+    </update>
+    <select id="getExercise" parameterType="demo.dto.ExerciseDto">
+        select *
+        from exercise
+        where id = #{exerciseId}
+    </select>
+    <update id="updateExercise" parameterType="demo.dto.ExerciseDto" useGeneratedKeys="true" keyProperty="id">
+        update exercise
+        set name = #{name},
+            target_muscle = #{targetMuscle},
+            exercise_type = #{exerciseType},
+            description = #{description}
+        where id = #{id}
+    </update>
+</mapper>

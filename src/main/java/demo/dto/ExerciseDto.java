@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ExerciseDto {
     private Long id;
+    private Long userId;
     private String name;
     private String targetMuscle;
     private String exerciseType;
