@@ -117,8 +117,8 @@
 <div th:if="${fail}" class="alert alert-danger" th:text="${fail}"></div>
 <div style="display: flex">
   <a style="padding-right: 0.75rem; padding-left: 0.75rem; padding-top: 0.5rem; padding-bottom: 0.5rem;
-            background-color: #357abd; color: white; margin-bottom: 2rem; border-radius: 6px"
-     th:href="@{/exercise.do?userId=${exerciseDto.userId}}"
+            background-color: #357abd; color: white; margin-bottom: 2rem; border-radius: 6px; cursor:pointer"
+     th:onclick="|redirectToExercise()|"
      class="button">
     돌아가기
   </a>
@@ -149,6 +149,11 @@
 </div>
 <script th:inline="javascript">
   const exerciseDto = /*[[${exerciseDto}]]*/ null;
+
+  function redirectToExercise() {
+    const userId = /*[[${exerciseDto.userId}]]*/ null;
+    window.location.href = `/exercise.do?userId=${userId}`;
+  }
 
   document.addEventListener('DOMContentLoaded', function() {
     const alert = document.querySelector('.alert');

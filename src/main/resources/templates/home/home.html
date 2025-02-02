@@ -5,6 +5,12 @@
     <title>Home</title>
 </head>
 <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
     .navItem {
         border: 0.5px solid gray;
         border-radius: 6px;
@@ -15,58 +21,138 @@
         color: white;
         cursor: pointer;
     }
+
+    .user-profile-card {
+        position: fixed;
+        border: 1px solid #ddd;
+        padding: 1.5rem;
+        border-radius: 12px;
+        width: 280px;
+        height: 320px;
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-section {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 12px;
+        padding: 8px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+    }
+
+    .profile-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .profile-value {
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .main-content {
+        margin-left: 400px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
     .content-card {
         margin: 0 auto;
         min-height: 300px;
-        border-bottom: 1px solid black;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 1.5rem;
+        background-color: white;
+        max-height: 300px;
+        overflow: auto;
     }
 
     .content-card-title {
-        font-size: 32px;
+        font-size: 1.8rem;
         font-weight: bold;
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .exercise-item {
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        transition: background-color 0.2s;
+    }
+
+    .exercise-item:hover {
+        background-color: #f8f9fa;
     }
 </style>
-<body style="margin: 1rem 2rem; padding: 0; ">
-  <nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
-      <div style="display: flex; gap: 12px;">
-          <a class="navItem" th:href="@{/home(userId=${userProfileDto.id})}" style="text-decoration: none;">Home</a>
-          <a class="navItem" th:href="@{/exercise.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Exercise</a>
-          <a class="navItem" th:href="@{/routine.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Routine</a>
-          <a class="navItem" th:href="@{/worklog.do(userId=${userProfileDto.id})}" style="text-decoration: none;">WorkLog</a>
-      </div>
-      <a th:href="@{/}">Select User</a>
-  </nav>
-  <div style="display: flex; width: 100%; gap: 52px;">
-      <div style="position:fixed; border: 1px solid black; padding: 16px 24px; border-radius: 12px; width: 280px; height:320px; display: flex; justify-content: center; flex-direction: column">
-          <span style="text-align: center">접속한 유저 정보</span>
-          <div style="margin: 0 auto;" th:text="${userProfileDto.username}"></div>
-          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px; justify-content: center">
-              <span style="text-align: center">현재 체지방량 / 근육량</span>
-              <span style="text-align: center" th:text="${userProfileDto.currentBodyFat}"></span>
-              <span style="text-align: center" th:text="${userProfileDto.currentMuscleMass}"></span>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 12px; justify-content: center;">
-              <span style="text-align: center">목표 체지방량 / 근육량</span>
-              <span style="text-align: center" th:text="${userProfileDto.targetBodyFat}"></span>
-              <span style="text-align: center" th:text="${userProfileDto.targetMuscleMass}"></span>
-          </div>
-      </div>
-      <div style="margin-left: 400px; flex:1; display: flex; flex-direction: column; gap: 2rem;">
-          <div>
-              <span class="content-card-title">My Exercise</span>
-              <div class="content-card">
-                  <div th:if="${#lists.size(exerciseList)} > 0" th:each="exerciseList : ${exerciseList}">
-                      <div>
-                          <span th:text="${exerciseList.name}"></span>
-                      </div>
-                  </div>
-              </div>
-          </div>
-          <div>
-              <span class="content-card-title">My Routine</span>
-              <div class="content-card"></div>
-          </div>
-      </div>
-  </div>
+<body style="margin: 1rem 2rem; padding: 0; background-color: #f5f5f5;">
+<nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
+    <div style="display: flex; gap: 12px;">
+        <a class="navItem" th:href="@{/home(userId=${userProfileDto.id})}" style="text-decoration: none;">Home</a>
+        <a class="navItem" th:href="@{/exercise.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Exercise</a>
+        <a class="navItem" th:href="@{/routine.do(userId=${userProfileDto.id})}" style="text-decoration: none;">Routine</a>
+    </div>
+    <a th:href="@{/}" style="text-decoration: none; color: #666;">Select User</a>
+</nav>
+<div style="display: flex; width: 100%; gap: 52px;">
+    <div class="user-profile-card">
+        <span class="profile-title">접속한 유저 정보</span>
+        <div class="profile-value" th:text="${userProfileDto.username}"></div>
+        <div class="profile-section">
+            <span class="profile-title">현재 체지방량 / 근육량</span>
+            <span class="profile-value" th:text="${userProfileDto.currentBodyFat} + '%'"></span>
+            <span class="profile-value" th:text="${userProfileDto.currentMuscleMass} + 'kg'"></span>
+        </div>
+        <div class="profile-section">
+            <span class="profile-title">목표 체지방량 / 근육량</span>
+            <span class="profile-value" th:text="${userProfileDto.targetBodyFat} + '%'"></span>
+            <span class="profile-value" th:text="${userProfileDto.targetMuscleMass} + 'kg'"></span>
+        </div>
+    </div>
+    <div class="main-content">
+        <div>
+            <span class="content-card-title">My Exercise</span>
+            <div class="content-card">
+                <div th:if="${#lists.size(exerciseList)} > 0" th:each="exercise : ${exerciseList}">
+                    <div class="exercise-item">
+                        <span th:text="${exercise.name}" style="font-weight: 500;"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <span class="content-card-title">My Routine</span>
+            <div class="content-card">
+                <div th:if="${#lists.size(routineList)} > 0" th:each="routine : ${routineList}">
+                    <div class="exercise-item">
+                        <div th:each="exercise : ${routine.routineExercises}">
+                            <div style="display: flex; gap: 1rem; align-items: center;">
+                                <span th:text="${exercise.exercise.name}" style="font-weight: 500;"></span>
+                                <span th:text="|${exercise.sets}세트|" style="color: #666;"></span>
+                                <span th:text="|${exercise.reps}회|" style="color: #666;"></span>
+                                <span th:text="|${exercise.weight}kg|" style="color: #666;"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:unless="${#lists.size(routineList)} > 0">
+                    <div class="exercise-item">
+                        등록된 루틴이 없습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

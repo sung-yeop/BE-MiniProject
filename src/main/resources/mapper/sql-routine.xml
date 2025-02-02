@@ -72,15 +72,13 @@
             exercise_id,
             sets,
             reps,
-            weight,
-            deleted_yn
+            weight
         ) VALUES (
              #{routineId},
              #{exercise.id},
              #{sets},
              #{reps},
-             #{weight},
-             'N'
+             #{weight}
          )
     </insert>
 </mapper>

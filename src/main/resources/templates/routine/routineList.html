@@ -15,6 +15,105 @@
     color: white;
     cursor: pointer;
   }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .routine-add-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid black;
+    cursor: pointer;
+    border-radius: 4px;
+    width: 160px;
+  }
+
+  .routine-form {
+    margin: 1rem 0;
+    border: 1px solid black;
+    padding: 1.5rem;
+  }
+
+  .exercise-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid black;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+  }
+
+  .exercise-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  input {
+    padding: 0.5rem;
+    border: 1px solid black;
+    width: 100px;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    border: 1px solid black;
+    cursor: pointer;
+  }
+
+  .bucket-list {
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid black;
+  }
+
+  .routine-list {
+    margin-top: 2rem;
+  }
+
+  .routine-exercise {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid black;
+    margin-bottom: 0.5rem;
+  }
+  .routine-container {
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .routine-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .routine-exercises {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .routine-exercise {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+  }
 </style>
 <body style="margin: 1rem 2rem; padding: 0; ">
 <nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
@@ -22,49 +121,62 @@
     <a class="navItem" th:href="@{/home(userId=${userId})}" style="text-decoration: none;">Home</a>
     <a class="navItem" th:href="@{/exercise.do(userId=${userId})}" style="text-decoration: none;">Exercise</a>
     <a class="navItem" th:href="@{/routine.do(userId=${userId})}" style="text-decoration: none;">Routine</a>
-    <a class="navItem" th:href="@{/worklog.do(userId=${userId})}" style="text-decoration: none;">WorkLog</a>
   </div>
   <a th:href="@{/}">Select User</a>
 </nav>
+<div class="container">
   <div>
-    <div>
-      <input type="button" value="새로운 루틴 등록하기" th:onclick="|toggleAddRoutineBtn()|"/>
-      <div id="addRoutineContainer" style="display: none; margin-top: 2rem;">
-        <form method="post" action="/routine/add" id="routineForm">
-          <div>
-            <div th:if="${#lists.size(exerciseList)} > 0" th:each="exercise: ${exerciseList}">
-              <div style="display: flex; gap: 6px;">
-                <div style="display: flex; flex-direction: column; gap: 6px">
-                  <span th:text="${exercise.name}"></span>
-                  <span th:text="${exercise.targetMuscle}"/>
-                  <span th:text="${exercise.exerciseType}"/>
-                  <span th:text="${exercise.description}"/>
-                </div>
+    <input type="button" class="routine-add-btn" value="새로운 루틴 등록하기" th:onclick="|toggleAddRoutineBtn()|"/>
+
+    <div id="addRoutineContainer" class="routine-form" style="display: none;">
+      <form method="post" action="/routine/add" id="routineForm">
+        <div>
+          <div th:if="${#lists.size(exerciseList)} > 0" th:each="exercise: ${exerciseList}">
+            <div class="exercise-item">
+              <div class="exercise-info">
+                <span th:text="${exercise.name}"></span>
+                <span th:text="${exercise.targetMuscle}"/>
+                <span th:text="${exercise.exerciseType}"/>
+                <span th:text="${exercise.description}"/>
+              </div>
+              <div class="input-group">
                 <input th:id="|sets${exercise.id}|" placeholder="세트수" />
                 <input th:id="|reps${exercise.id}|" placeholder="반복수" />
                 <input th:id="|weight${exercise.id}|" placeholder="무게 (kg)" />
                 <button type="button" th:onclick="|addExerciseToRoutine(${exercise.id})|">+</button>
               </div>
             </div>
-            <div th:unless="${#lists.size(exerciseList)} > 0">
-              아직 등록된 운동이 없습니다. 운동부터 우선 등록해주세요
-            </div>
-            <div id="bucketList"/>
           </div>
-          <input type="hidden" name="userId" th:value="${userId}">
-          <button type="submit" th:onclick="|saveRoutine(event)|">저장하기</button>
-        </form>
+
+          <div th:unless="${#lists.size(exerciseList)} > 0">
+            아직 등록된 운동이 없습니다. 운동부터 우선 등록해주세요
+          </div>
+
+          <div id="bucketList" class="bucket-list"/>
+        </div>
+        <input type="hidden" name="userId" th:value="${userId}">
+        <button type="submit" th:onclick="|saveRoutine(event)|">저장하기</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="routine-list">
+    <div th:if="${#lists.size(routineList)} > 0" th:each="routine : ${routineList}" class="routine-container">
+      <div class="routine-header">
+        <h3>루틴 #<span th:text="${routine.id}"/></h3>
+        <span th:text="${#temporals.format(routine.createdDt, 'yyyy-MM-dd')}"></span>
       </div>
-      </div>
-      <div th:if="${#lists.size(routineList)} > 0" th:each="routine : ${routineList}">
-        <div th:if="${#lists.size(routine.routineExercises)} > 0" th:each="exercise : ${routine.routineExercises}">
+      <div th:if="${#lists.size(routine.routineExercises)} > 0" class="routine-exercises">
+        <div th:each="exercise : ${routine.routineExercises}" class="routine-exercise">
           <span th:text="${exercise.exercise.name}"/>
           <span th:text="|${exercise.sets} 세트|"/>
           <span th:text="|${exercise.reps} 회|"/>
           <span th:text="|${exercise.weight} kg|"/>
         </div>
       </div>
+    </div>
   </div>
+</div>
   <script th:inline="javascript">
     function toggleAddRoutineBtn(){
       let target = document.getElementById('addRoutineContainer').style

@@ -3,86 +3,213 @@
 <head>
   <meta charset="UTF-8">
   <title>유저 선택창</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      margin-top: 6rem;
+      height: 100vh;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      width: 50%;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #333;
+    }
+
+    .register-btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      margin-bottom: 1rem;
+      background-color: #4a90e2;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .register-btn:hover {
+      background-color: #357abd;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 1rem;
+    }
+
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f8f9fa;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: #f8f9fa;
+    }
+
+    .action-link {
+      text-decoration: none;
+      color: #4a90e2;
+      cursor: pointer;
+    }
+
+    .action-link:hover {
+      text-decoration: underline;
+    }
+
+    .delete-btn {
+      padding: 0.25rem 0.75rem;
+      border: 1px solid #dc3545;
+      background-color: white;
+      color: #dc3545;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    #modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      gap: 1rem;
+    }
+
+    .modal-text {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .confirm-btn {
+      padding: 0.5rem 1rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cancel-btn {
+      padding: 0.5rem 1rem;
+      background-color: white;
+      border: 1px solid #6c757d;
+      color: #6c757d;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
-<!--  <link rel="stylesheet" th:href="@{/css/board.css}"/>-->
-<body style="display: flex; margin-top: 10rem; height: 100vh">
-  <div class="container" style="width: 50%; margin: 0 auto;">
-    <h2>유저 목록</h2>
-    <div><a th:href="@{/userAdd.do}" class="button">유저 등록</a></div>
-    <table class="board_list">
-      <colgroup>
-        <col width="15%"/>
-        <col width="*"/>
-      </colgroup>
-      <thead>
-      <tr>
-        <th scope="col">유저 번호</th>
-        <th scope="col">유저 이름</th>
-        <th scope="col">접속</th>
-        <th scope="col">수정</th>
-        <th scope="col">유저 삭제</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr th:if="${#lists.size(list)} > 0" th:each="list: ${list}">
-        <td th:text="${list.id}"></td>
-        <td th:text="${list.username}"></td>
-        <td>
-          <a th:href="@{/home(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>
-        </td>
-        <td>
-          <a th:href="@{/userUpdate.do(userId=${list.id})}" style="text-decoration: none; color: inherit; cursor: pointer;">선택</a>
-        </td>
-        <td>
-          <input type="button" th:onclick="|viewModal(${list.id})|" th:value="삭제"/>
-        </td>
-      </tr>
-      <tr th:unless="${#lists.size(list)} > 0">
-        <td colspan="4">조회된 결과가 없습니다.</td>
-      </tr>
-      </tbody>
-    </table>
-    <div id="modal" style="display: none; justify-content: center; padding: 1rem; border: 1px solid black; border-radius: 12px; flex-direction: column; gap:12px" >
-      <span>해당 유저를 삭제하시겠습니까?</span>
-      <div style="display:flex; gap: 1.5rem">
-        <div onclick="confirmDelete()"
-             style="padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 0.75rem; padding-right: 0.75rem; cursor: pointer; background-color: #357abd; color: white; border-radius: 8px" >네</div>
-        <div onclick="hideModal()"
-             style="padding-top: 0.5rem; padding-bottom: 0.5rem; padding-left: 0.75rem; padding-right: 0.75rem; border: 1px solid black; cursor: pointer; color: black; border-radius: 8px">아니오</div>
-      </div>
+<body>
+<div class="container">
+  <h2>유저 목록</h2>
+  <a th:href="@{/userAdd.do}" class="register-btn">유저 등록</a>
+  <table>
+    <thead>
+    <tr>
+      <th>유저 번호</th>
+      <th>유저 이름</th>
+      <th>접속</th>
+      <th>수정</th>
+      <th>삭제</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.size(list)} > 0" th:each="list: ${list}">
+      <td th:text="${list.id}"></td>
+      <td th:text="${list.username}"></td>
+      <td>
+        <a th:href="@{/home(userId=${list.id})}" class="action-link">선택</a>
+      </td>
+      <td>
+        <a th:href="@{/userUpdate.do(userId=${list.id})}" class="action-link">수정</a>
+      </td>
+      <td>
+        <button class="delete-btn" th:onclick="|viewModal(${list.id})|">삭제</button>
+      </td>
+    </tr>
+    <tr th:unless="${#lists.size(list)} > 0">
+      <td colspan="5" style="text-align: center;">등록된 유저가 없습니다.</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div id="modal">
+    <span class="modal-text">해당 유저를 삭제하시겠습니까?</span>
+    <div class="modal-buttons">
+      <button class="confirm-btn" onclick="confirmDelete()">확인</button>
+      <button class="cancel-btn" onclick="hideModal()">취소</button>
     </div>
-    <script th:inline="javascript">
-      deleteTargetId = null;
-      function viewModal(userId) {
-        console.log("onClickDeleteBtn")
-        deleteTargetId = userId;
-        document.getElementById("modal").style.display="flex";
-      }
-
-      function hideModal(){
-        document.getElementById("modal").style.display="none";
-      }
-
-      function confirmDelete() {
-        if (deleteTargetId) {
-          fetch(`/user/delete?userId=${deleteTargetId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }).then(response => {
-            if (response.ok) {
-              location.reload();
-            } else {
-              alert('삭제 중 오류가 발생했습니다.');
-            }
-          }).catch(error => {
-            alert('삭제 중 오류가 발생했습니다.');
-          });
-        }
-        hideModal();
-      }
-    </script>
   </div>
+</div>
+
+<script th:inline="javascript">
+  let deleteTargetId = null;
+
+  function viewModal(userId) {
+    deleteTargetId = userId;
+    document.getElementById("modal").style.display = "flex";
+  }
+
+  function hideModal() {
+    document.getElementById("modal").style.display = "none";
+  }
+
+  function confirmDelete() {
+    if (deleteTargetId) {
+      fetch(`/user/delete?userId=${deleteTargetId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).then(response => {
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('삭제 중 오류가 발생했습니다.');
+        }
+      }).catch(error => {
+        alert('삭제 중 오류가 발생했습니다.');
+      });
+    }
+    hideModal();
+  }
+</script>
 </body>
 </html>
