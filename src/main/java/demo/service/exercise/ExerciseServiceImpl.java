@@ -13,7 +13,7 @@ public class ExerciseServiceImpl implements ExerciseService {
     ExerciseMapper exerciseMapper;
 
     @Override
-    public List<ExerciseDto> getUserExercise(Integer userId) {
+    public List<ExerciseDto> getUserExercise(Long userId) {
         return exerciseMapper.getUserExercise(Long.valueOf(userId));
     }
 

@@ -21,7 +21,7 @@ public class ExerciseController {
     private ExerciseService exerciseService;
 
     @GetMapping("/exercise.do")
-    public ModelAndView homeExercise(@RequestParam ("userId") Integer userId){
+    public ModelAndView homeExercise(@RequestParam ("userId") Long userId){
         ModelAndView mv = new ModelAndView("/exercise/exerciseList");
         List<ExerciseDto> list = exerciseService.getUserExercise(userId);
         mv.addObject("list", list);

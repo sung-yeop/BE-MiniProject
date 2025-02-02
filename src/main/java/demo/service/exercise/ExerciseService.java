@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ExerciseService {
 
-    List<ExerciseDto> getUserExercise(Integer userId);
+    List<ExerciseDto> getUserExercise(Long userId);
 
     boolean addExercise(ExerciseDto exerciseDto);
 

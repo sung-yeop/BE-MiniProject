@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+</head>
+<style>
+  .navItem {
+    border: 0.5px solid gray;
+    border-radius: 6px;
+    padding: 6px 12px;
+  }
+  .navItem:hover {
+    background-color: #4a90e2;
+    color: white;
+    cursor: pointer;
+  }
+</style>
+<body style="margin: 1rem 2rem; padding: 0; ">
+<nav style="display: flex; align-items:center; justify-content: space-between; margin: 24px 0; padding: 16px 0;">
+  <div style="display: flex; gap: 12px;">
+    <a class="navItem" th:href="@{/home(userId=${userId})}" style="text-decoration: none;">Home</a>
+    <a class="navItem" th:href="@{/exercise.do(userId=${userId})}" style="text-decoration: none;">Exercise</a>
+    <a class="navItem" th:href="@{/routine.do(userId=${userId})}" style="text-decoration: none;">Routine</a>
+    <a class="navItem" th:href="@{/worklog.do(userId=${userId})}" style="text-decoration: none;">WorkLog</a>
+  </div>
+  <a th:href="@{/}">Select User</a>
+</nav>
+  <div>
+    <div>
+      <input type="button" value="새로운 루틴 등록하기" th:onclick="|toggleAddRoutineBtn()|"/>
+      <div id="addRoutineContainer" style="display: none; margin-top: 2rem;">
+        <form method="post" action="/routine/add" id="routineForm">
+          <div>
+            <div th:if="${#lists.size(exerciseList)} > 0" th:each="exercise: ${exerciseList}">
+              <div style="display: flex; gap: 6px;">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <span th:text="${exercise.name}"></span>
+                  <span th:text="${exercise.targetMuscle}"/>
+                  <span th:text="${exercise.exerciseType}"/>
+                  <span th:text="${exercise.description}"/>
+                </div>
+                <input th:id="|sets${exercise.id}|" placeholder="세트수" />
+                <input th:id="|reps${exercise.id}|" placeholder="반복수" />
+                <input th:id="|weight${exercise.id}|" placeholder="무게 (kg)" />
+                <button type="button" th:onclick="|addExerciseToRoutine(${exercise.id})|">+</button>
+              </div>
+            </div>
+            <div th:unless="${#lists.size(exerciseList)} > 0">
+              아직 등록된 운동이 없습니다. 운동부터 우선 등록해주세요
+            </div>
+            <div id="bucketList"/>
+          </div>
+          <input type="hidden" name="userId" th:value="${userId}">
+          <button type="submit" th:onclick="|saveRoutine(event)|">저장하기</button>
+        </form>
+      </div>
+      </div>
+      <div th:if="${#lists.size(routineList)} > 0" th:each="routine : ${routineList}">
+        <div th:if="${#lists.size(routine.routineExercises)} > 0" th:each="exercise : ${routine.routineExercises}">
+          <span th:text="${exercise.exercise.name}"/>
+          <span th:text="|${exercise.sets} 세트|"/>
+          <span th:text="|${exercise.reps} 회|"/>
+          <span th:text="|${exercise.weight} kg|"/>
+        </div>
+      </div>
+  </div>
+  <script th:inline="javascript">
+    function toggleAddRoutineBtn(){
+      let target = document.getElementById('addRoutineContainer').style
+      if (target.display === "none") {
+        target.display = "flex";
+        return;
+      }
+      target.display = "none";
+    }
+
+    function saveRoutine(event) {
+      event.preventDefault();
+      document.getElementById('routineForm').submit();
+    }
+
+    function addExerciseToRoutine(exerciseId) {
+      const sets = document.getElementById(`sets${exerciseId}`).value;
+      const reps = document.getElementById(`reps${exerciseId}`).value;
+      const weight = document.getElementById(`weight${exerciseId}`).value;
+
+      if (!sets || !reps) {
+        alert('세트수와 반복수를 입력해주세요');
+        return;
+      }
+
+      fetch(`/routine/bucket/add?exerciseId=${exerciseId}&sets=${sets}&reps=${reps}&weight=${weight}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }})
+          .then(response => response.json())
+          .then(data => {
+            updateBucketList(data);
+            document.getElementById(`sets${exerciseId}`).value = '';
+            document.getElementById(`reps${exerciseId}`).value = '';
+            document.getElementById(`weight${exerciseId}`).value = '';
+          })
+          .catch(error => {
+            alert('추가 중 오류가 발생했습니다.');
+          });
+    }
+
+    function updateBucketList(response) {
+      const targetDom = document.getElementById("bucketList");
+      const fragment = document.createDocumentFragment();
+
+      Object.keys(response).map(bucketIdx => {
+        const exerciseElement = document.createElement('div');
+        exerciseElement.className = 'exercise-item';
+
+        exerciseElement.innerHTML = `
+                <div>
+                   <span>${response[bucketIdx].exercise.name} - ${response[bucketIdx].sets}세트 ${response[bucketIdx].reps}회</span>
+                   <span>${response[bucketIdx].weight}kg</span>
+                  <button type="button" onclick="deleteExerciseInBucket(${bucketIdx})">-</button>
+                </div>
+        `
+        fragment.appendChild(exerciseElement);
+      })
+      targetDom.innerHTML = '';
+      targetDom.appendChild(fragment);
+    }
+
+    function deleteExerciseInBucket(bucketIdx){
+      fetch(`/routine/bucket/delete?bucketIdx=${bucketIdx}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }})
+          .then(response => response.json())
+          .then(data => {
+            updateBucketList(data);
+          })
+          .catch(error => {
+            alert('추가 중 오류가 발생했습니다.');
+          });
+    }
+  </script>
+</body>
+</html>

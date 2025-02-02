@@ -10,7 +10,7 @@ public interface UserService {
 
     Boolean updateUser(UserProfileDto userProfileDto);
 
-    UserProfileDto selectUserDetail(Integer userId);
+    UserProfileDto selectUserDetail(Long userId);
 
-    Boolean deleteUser(Integer userId);
+    Boolean deleteUser(Long userId);
 }

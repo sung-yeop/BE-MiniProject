@@ -32,14 +32,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserProfileDto selectUserDetail(Integer userId) {
+    public UserProfileDto selectUserDetail(Long userId) {
         UserProfileDto userProfileDto = userMapper.getUserDetail(userId);
         System.out.println("Find : " + userProfileDto);
         return userProfileDto;
     }
 
     @Override
-    public Boolean deleteUser(Integer userId) {
+    public Boolean deleteUser(Long userId) {
         UserProfileDto userProfileDto = userMapper.getUserDetail(userId);
         int isSuccess = userMapper.deleteUser(userProfileDto);
         return isSuccess == 1;

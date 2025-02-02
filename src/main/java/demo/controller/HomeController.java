@@ -20,7 +20,7 @@ public class HomeController {
     private ExerciseService exerciseService;
 
     @GetMapping("/home")
-    public ModelAndView home(@RequestParam("userId") Integer userId) {
+    public ModelAndView home(@RequestParam("userId") Long userId) {
         ModelAndView mv = new ModelAndView("/home/home");
         UserProfileDto userProfileDto = userService.selectUserDetail(userId);
         List<ExerciseDto> exerciseList = exerciseService.getUserExercise(userId);

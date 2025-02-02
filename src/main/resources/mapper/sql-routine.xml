@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="demo.mapper.routine.RoutineMapper">
+    <resultMap id="routineResultMap" type="demo.dto.RoutineDto">
+        <id property="id" column="routine_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createdDt" column="created_dt"/>
+        <result property="updatedDt" column="updated_dt"/>
+        <result property="deletedYn" column="deleted_yn"/>
+        <collection property="routineExercises" ofType="demo.dto.RoutineExerciseDto">
+            <id property="id" column="routine_exercise_id"/>
+            <result property="routineId" column="routine_id"/>
+            <result property="sets" column="sets"/>
+            <result property="reps" column="reps"/>
+            <result property="weight" column="weight"/>
+            <association property="exercise" javaType="demo.dto.ExerciseDto">
+                <id property="id" column="exercise_id"/>
+                <result property="userId" column="exercise_user_id"/>
+                <result property="name" column="exercise_name"/>
+                <result property="targetMuscle" column="target_muscle"/>
+                <result property="exerciseType" column="exercise_type"/>
+                <result property="description" column="description"/>
+                <result property="deletedYn" column="e_deleted_yn"/>
+            </association>
+        </collection>
+    </resultMap>
+    <select id="getRoutine" parameterType="Long" resultMap="routineResultMap">
+        SELECT
+            r.id as routine_id,
+            r.user_id,
+            r.created_dt,
+            r.updated_dt,
+            r.deleted_yn,
+            re.id as routine_exercise_id,
+            re.sets,
+            re.reps,
+            re.weight,
+            e.id as exercise_id,
+            e.user_id as exercise_user_id,
+            e.name as exercise_name,
+            e.target_muscle,
+            e.exercise_type,
+            e.description,
+            e.deleted_yn as e_deleted_yn
+        FROM
+            routine r
+                LEFT JOIN routine_exercise re ON r.id = re.routine_id
+                LEFT JOIN exercise e ON re.exercise_id = e.id
+        WHERE
+            r.deleted_yn = 'N'
+          AND r.user_id = #{userId}
+          AND (e.deleted_yn = 'N' OR e.deleted_yn IS NULL)
+        ORDER BY
+            r.id DESC, re.id ASC
+    </select>
+    <insert id="insertRoutine" parameterType="demo.dto.RoutineDto" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO routine (
+            user_id,
+            created_dt,
+            updated_dt,
+            deleted_yn
+        ) VALUES (
+             #{userId},
+             now(),
+             now(),
+             'N'
+         )
+    </insert>
+    <insert id="insertRoutineExercise" parameterType="demo.dto.RoutineExerciseDto">
+        INSERT INTO routine_exercise (
+            routine_id,
+            exercise_id,
+            sets,
+            reps,
+            weight,
+            deleted_yn
+        ) VALUES (
+             #{routineId},
+             #{exercise.id},
+             #{sets},
+             #{reps},
+             #{weight},
+             'N'
+         )
+    </insert>
+</mapper>

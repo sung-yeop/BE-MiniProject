@@ -42,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/userUpdate.do")
-    public ModelAndView openUserDetail(@RequestParam("userId") Integer userId) {
+    public ModelAndView openUserDetail(@RequestParam("userId") Long userId) {
         ModelAndView modelAndView = new ModelAndView("/user/userUpdate");
         UserProfileDto userProfileDto = userService.selectUserDetail(userId);
         modelAndView.addObject("userProfileDto", userProfileDto);
@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @PostMapping("/user/delete")
-    public String deleteUser(@RequestParam("userId") Integer userId, RedirectAttributes redirectAttributes) {
+    public String deleteUser(@RequestParam("userId") Long userId, RedirectAttributes redirectAttributes) {
         Boolean isSuccess = userService.deleteUser(userId);
         if (isSuccess) {
             redirectAttributes.addFlashAttribute("success", "사용자가 성공적으로 삭제되었습니다.");
